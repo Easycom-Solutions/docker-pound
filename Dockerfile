@@ -1,14 +1,12 @@
-FROM easycom/base
+FROM alpine
 MAINTAINER Frédéric T <xmedias@easycom.digital>
 
 # =========================================
 # Update apt-cache and install pound
 # =========================================
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-	&& apt-get -y --no-install-recommends install pound \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+RUN apk add --update --no-cache pound && rm -rf /var/cache/apl/*
+RUN deluser xfs; addgroup -g 33 -S www-data; adduser -u 33 -DSHG www-data www-data
 
 ## ================================
 ## LAUNCH PART

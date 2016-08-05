@@ -1,5 +1,4 @@
-#!/bin/bash
-set -x
+#!/bin/sh
 
 CONFIG_FILE='/pound-config/pound.cfg'
 PARAMS="-f $CONFIG_FILE"
@@ -7,6 +6,7 @@ PARAMS="-f $CONFIG_FILE"
 if [ -f "$CONFIG_FILE" ]; then
   echo 'Using mounted config file'
 else
+  echo 'Using temporary configurations'
   echo 'User "www-data"' > $CONFIG_FILE
   echo 'Group "www-data"' >> $CONFIG_FILE
   echo 'Daemon 0' >> $CONFIG_FILE
@@ -25,9 +25,10 @@ else
   if [ ! -z "$BACKENDS" ]; then
     for BACKEND in $(echo "$BACKENDS" | tr ' ' '\n'); do
       echo 'Backend' >> $CONFIG_FILE
-      IFS=':' read -a address <<< "$BACKEND"
-      echo "Address ${address[0]}" >> $CONFIG_FILE
-      echo "Port ${address[1]}" >> $CONFIG_FILE
+      ADDRESS=`echo $BACKEND | cut -d':' -f1`
+      PORT=`echo $BACKEND | cut -d':' -f2`
+      echo "Address ${ADDRESS}" >> $CONFIG_FILE
+      echo "Port ${PORT}" >> $CONFIG_FILE
       echo 'End' >> $CONFIG_FILE
     done
   elif tail -n +2 /etc/hosts | grep -vqE '::|localhost'; then
